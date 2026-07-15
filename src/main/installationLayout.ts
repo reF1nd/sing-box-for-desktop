@@ -9,7 +9,7 @@ export interface WindowsInstallationLayout {
   daemonDataDirectory: string;
 }
 
-const installationRegistryPath = String.raw`SOFTWARE\SagerNet\sing-box`;
+const installationRegistryPath = String.raw`SOFTWARE\reF1nd\sing-box`;
 
 const installationLayoutScript = String.raw`
 $ErrorActionPreference = "Stop"
@@ -19,7 +19,7 @@ $applicationDataDirectory = $env:sing_box_default_application_data_directory
 $commonApplicationData = [Environment]::GetFolderPath(
   [Environment+SpecialFolder]::CommonApplicationData
 )
-$daemonDataDirectory = Join-Path $commonApplicationData "sing-box-daemon"
+$daemonDataDirectory = Join-Path $commonApplicationData "sing-box-daemon-reF1nd"
 
 $registryView = if ([Environment]::Is64BitOperatingSystem) {
   [Microsoft.Win32.RegistryView]::Registry64
@@ -92,7 +92,7 @@ export function readWindowsInstallationLayout(
     "v1.0",
     "powershell.exe",
   );
-  const temporaryDirectory = mkdtempSync(join(tmpdir(), "sing-box-installation-layout-"));
+  const temporaryDirectory = mkdtempSync(join(tmpdir(), "sing-box-reF1nd-installation-layout-"));
   const outputPath = join(temporaryDirectory, "layout.json");
   try {
     const result = spawnSync(

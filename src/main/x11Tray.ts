@@ -39,7 +39,7 @@ function iconPixmaps(iconPath: string): IconPixmap[] {
 
 class StatusNotifierItem extends dbus.interface.Interface {
   readonly Category = "ApplicationStatus";
-  readonly Id = "sing-box";
+  readonly Id = "sing-box-reF1nd";
   readonly Title = "sing-box";
   readonly Status = "Active";
   readonly WindowId = 0;
