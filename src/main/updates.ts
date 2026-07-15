@@ -7,7 +7,7 @@ import { pipeline } from "node:stream/promises";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
 
 import { app, BrowserWindow, ipcMain } from "electron";
-import { compare, gt, prerelease, valid } from "semver";
+import { compare, prerelease, valid } from "semver";
 
 import { InstallUpdateResult } from "../shared/gen/experimental/boxdd/desktop_service_pb";
 import { UPDATES_CALL, UPDATES_STATE_CHANGED } from "../shared/ipc";
@@ -22,7 +22,7 @@ import { applicationCacheDirectory } from "./appCache";
 import { parseBooleanPreference, Preference } from "./database";
 import { desktopService } from "./daemon";
 
-const RELEASES_URL = "https://api.github.com/repos/SagerNet/sing-box/releases";
+const RELEASES_URL = "https://api.github.com/repos/reF1nd/sing-box-releases/releases";
 const RELEASES_PER_PAGE = 100;
 const RELEASES_REQUEST_TIMEOUT_MILLISECONDS = 30_000;
 const EXIT_CODE_CANCELLED = 1223;
@@ -35,7 +35,47 @@ const WINDOWS_UPDATE_ARCHITECTURES: Partial<Record<NodeJS.Architecture, string[]
 };
 const updateArchitectureTokens = WINDOWS_UPDATE_ARCHITECTURES[process.arch];
 const UPDATES_SUPPORTED = process.platform === "win32" && updateArchitectureTokens !== undefined;
-const APP_IS_PRERELEASE = prerelease(__APP_VERSION__) !== null;
+
+interface ComparableVersion {
+  base: string;
+  revision: number;
+}
+
+function parseComparableVersion(version: string): ComparableVersion | null {
+  const normalizedVersion = valid(version);
+  if (normalizedVersion === null) {
+    return null;
+  }
+  const forkSuffix = /^(.*)-reF1nd(?:\.(\d+))?$/.exec(normalizedVersion);
+  if (forkSuffix === null) {
+    return { base: normalizedVersion, revision: 0 };
+  }
+  const base = valid(forkSuffix[1]);
+  if (base === null) {
+    return { base: normalizedVersion, revision: 0 };
+  }
+  return {
+    base,
+    revision: forkSuffix[2] === undefined ? 0 : Number.parseInt(forkSuffix[2], 10),
+  };
+}
+
+function compareVersions(left: ComparableVersion, right: ComparableVersion): number {
+  const baseComparison = compare(left.base, right.base);
+  if (baseComparison !== 0) {
+    return baseComparison;
+  }
+  return left.revision - right.revision;
+}
+
+const currentVersion = (() => {
+  const version = parseComparableVersion(__APP_VERSION__);
+  if (version === null) {
+    throw new Error(`invalid application version: ${__APP_VERSION__}`);
+  }
+  return version;
+})();
+const APP_IS_PRERELEASE = prerelease(currentVersion.base) !== null;
 
 function parseString(value: unknown): string {
   if (typeof value !== "string") {
@@ -119,11 +159,14 @@ function broadcastState(): void {
 }
 
 function shouldIncludeVersion(version: string, track: UpdateTrack): boolean {
-  const normalizedVersion = valid(version);
-  if (normalizedVersion === null) {
+  const candidateVersion = parseComparableVersion(version);
+  if (candidateVersion === null) {
     return false;
   }
-  return gt(normalizedVersion, __APP_VERSION__) || (track === "stable" && APP_IS_PRERELEASE);
+  return (
+    compareVersions(candidateVersion, currentVersion) > 0 ||
+    (track === "stable" && APP_IS_PRERELEASE)
+  );
 }
 
 function setUpdateInfo(info: AppUpdateInfo | null): void {
@@ -285,8 +328,16 @@ async function checkForUpdate(): Promise<AppUpdateInfo | null> {
       if (!shouldIncludeVersion(version, track)) {
         continue;
       }
-      if (best !== null && compare(version, best.versionName) <= 0) {
-        continue;
+      if (best !== null) {
+        const candidateVersion = parseComparableVersion(version);
+        const bestVersion = parseComparableVersion(best.versionName);
+        if (
+          candidateVersion === null ||
+          bestVersion === null ||
+          compareVersions(candidateVersion, bestVersion) <= 0
+        ) {
+          continue;
+        }
       }
       best = {
         versionName: version,
