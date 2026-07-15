@@ -1,4 +1,5 @@
-productName: sing-box
+appId: io.github.reF1nd.sing-box-desktop
+productName: sing-box-reF1nd
 copyright: nekohasekai
 publish: null
 afterPack: scripts/afterPack.cjs
@@ -43,7 +44,7 @@ fileAssociations:
     description: sing-box profile
     mimeType: application/x-sing-box-profile
 win:
-  appId: io.nekohasekai.sfw
+  appId: io.reF1nd.sfw
   forceCodeSigning: true
   icon: resources/icon.ico
   signtoolOptions:
@@ -91,9 +92,9 @@ nsis:
   include: build/installer.nsh
   artifactName: SFW-${version}-${env.SFW_ARCHITECTURE}.${ext}
 linux:
-  appId: io.nekohasekai.sfl
+  appId: io.reF1nd.sfl
   syncDesktopName: true
-  executableName: sing-box
+  executableName: sing-box-reF1nd
   icon: resources/icons
   synopsis: The universal proxy platform
   category: Network
@@ -112,7 +113,7 @@ linux:
       to: daemon/sing-box-daemon
   desktop:
     entry:
-      StartupWMClass: sing-box
+      StartupWMClass: sing-box-reF1nd
   target:
     - deb
     - rpm
@@ -127,9 +128,9 @@ deb:
     - --depends=pkexec
     - --deb-compression-level=9
     - --before-remove=build/linux-before-remove.sh
-    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon.service
-    - build/io.nekohasekai.sfl.policy=/usr/share/polkit-1/actions/io.nekohasekai.sfl.policy
-    - build/io.nekohasekai.sfl.metainfo.xml=/usr/share/metainfo/io.nekohasekai.sfl.metainfo.xml
+    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon-reF1nd.service
+    - build/io.reF1nd.sfl.policy=/usr/share/polkit-1/actions/io.reF1nd.sfl.policy
+    - build/io.reF1nd.sfl.metainfo.xml=/usr/share/metainfo/io.reF1nd.sfl.metainfo.xml
 rpm:
   packageCategory: Applications/Internet
   afterInstall: build/linux-after-install.sh
@@ -142,9 +143,9 @@ rpm:
     - --rpm-rpmbuild-define=use_source_date_epoch_as_buildtime 1
     - --rpm-rpmbuild-define=clamp_mtime_to_source_date_epoch 1
     - --before-remove=build/linux-before-remove.sh
-    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon.service
-    - build/io.nekohasekai.sfl.policy=/usr/share/polkit-1/actions/io.nekohasekai.sfl.policy
-    - build/io.nekohasekai.sfl.metainfo.xml=/usr/share/metainfo/io.nekohasekai.sfl.metainfo.xml
+    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon-reF1nd.service
+    - build/io.reF1nd.sfl.policy=/usr/share/polkit-1/actions/io.reF1nd.sfl.policy
+    - build/io.reF1nd.sfl.metainfo.xml=/usr/share/metainfo/io.reF1nd.sfl.metainfo.xml
 pacman:
   artifactName: SFL-${version}-${arch}.pkg.tar.zst
   packageCategory: network
@@ -170,6 +171,6 @@ pacman:
     - --description=Linux client for sing-box, The universal proxy platform
     - --before-remove=build/linux-before-remove-pacman.sh
     - --after-upgrade=build/linux-after-install-pacman.sh
-    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon.service
-    - build/io.nekohasekai.sfl.policy=/usr/share/polkit-1/actions/io.nekohasekai.sfl.policy
-    - build/io.nekohasekai.sfl.metainfo.xml=/usr/share/metainfo/io.nekohasekai.sfl.metainfo.xml
+    - build/sing-box-daemon.service=/usr/lib/systemd/system/sing-box-daemon-reF1nd.service
+    - build/io.reF1nd.sfl.policy=/usr/share/polkit-1/actions/io.reF1nd.sfl.policy
+    - build/io.reF1nd.sfl.metainfo.xml=/usr/share/metainfo/io.reF1nd.sfl.metainfo.xml
