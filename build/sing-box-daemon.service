@@ -1,14 +1,14 @@
 [Unit]
-Description=sing-box Service
+Description=sing-box reF1nd Service
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-StateDirectory=sing-box-daemon
 StateDirectoryMode=0700
 UMask=0077
-ExecStart=/opt/sing-box/resources/daemon/sing-box-daemon run --working-directory /var/lib/sing-box-daemon --socket /run/sing-box.socket
+StateDirectory=sing-box-daemon-reF1nd
+ExecStart=/opt/sing-box-reF1nd/resources/daemon/sing-box-daemon run --working-directory /var/lib/sing-box-daemon-reF1nd --socket /run/sing-box-reF1nd.socket
 Restart=always
 RestartSec=5
 
