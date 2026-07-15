@@ -419,7 +419,7 @@ if (!singleInstanceLock) {
 } else {
   app.setAsDefaultProtocolClient("sing-box");
   if (process.platform === "win32") {
-    app.setAppUserModelId("io.nekohasekai.sfw");
+    app.setAppUserModelId("io.reF1nd.sfw");
   }
 
   app.on("second-instance", (_event, argv, workingDirectory) => {
